@@ -22,12 +22,16 @@
 import os
 import sys
 
+from distortion_calibration import *
 from dgs_analysis import *
 
 if __name__ == '__main__':
     test_file = 'C:\\data\\data\\stripes\\photoseives\\pismo\\image_DSC_0046_test\\test.JPG'
-    d = dgs_analysis (test_file)
-    d.run ()
+    dst = distortion_calibration (test_file)
+    cal_test_file = dst.run ()
+    
+    gs = dgs_analysis (cal_test_file)
+    gs.run ()
     
     
 

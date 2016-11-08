@@ -1,4 +1,4 @@
-# make_photodirs
+# photoseive utilities
 # Copyright 2016 Thomas E. Barchyn
 # Contact: Thomas E. Barchyn [tbarchyn@gmail.com]
 

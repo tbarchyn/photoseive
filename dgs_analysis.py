@@ -39,16 +39,18 @@ class dgs_analysis:
         self.stats_file = os.path.join (file_dir, 'stats.txt')
         self.percentiles_file = os.path.join (file_dir, 'percentiles.txt')
         self.gsd_file = os.path.join (file_dir, 'gsd.txt')
+        
+        # read the config file
+        self.read_config ()
+        
         return
     
     def run (self):
         '''
         function to run the DGS grainsize analysis on an image
         '''
-        # read the config file
-        self.read_config ()
         
-        # continue and run the analysis if we successfully read the file
+        # run the analysis if we successfully read the file
         if not self.config_file_error:
             self.dgs_stats = DGS.dgs (self.image_file, self.config ['density'], self.config ['resolution'],
                                       self.config ['dofilter'], self.config ['maxscale'], self.config ['notes'],

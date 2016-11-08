@@ -27,9 +27,12 @@ import shutil
 def make_photodirs (target_dir):
     '''
     function to make sub directories for each image, labeled with the
-    image name.
+    image name. Also copy over a blank config file.
     target_dir = directory that contains all the images
     '''
+    
+    default_config_file = 'C:\\data\\data\\stripes\\photoseives\\config.txt'
+    
     oldwd = os.getcwd ()
     os.chdir (target_dir)
     
@@ -43,6 +46,7 @@ def make_photodirs (target_dir):
         dir_name = 'image_' + im_name       # make a dir name
         os.mkdir (dir_name)                 # make a directory
         shutil.copy2 (im, os.path.join(os.getcwd(), dir_name, im))
+        shutil.copy2 (default_config_file, os.path.join (os.getcwd(), dir_name, 'config.txt'))
         print ('completed: ' + im)
     
     os.chdir (oldwd)    

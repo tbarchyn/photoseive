@@ -23,6 +23,7 @@ import os
 import sys
 import DGS
 import yaml
+import datetime
 import numpy as np
 import pandas as pd
 
@@ -88,6 +89,7 @@ class dgs_analysis:
         self.stats['mean'] = float (self.dgs_stats['mean grain size'])
         self.stats['sorting'] = float (self.dgs_stats['grain size sorting'])
         self.stats['kurtosis'] = float (self.dgs_stats['grain size kurtosis'])
+        self.stats['time'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
         with open (self.stats_file, 'w') as f:
             yaml.dump (self.stats, f, default_flow_style = False)

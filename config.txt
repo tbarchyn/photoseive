@@ -1,0 +1,7 @@
+calibration_file: 'C:\\data\\data\\stripes\\cameras\\raleigh\\calibration.txt'
+density: 10
+resolution: 0.01
+dofilter: 1 
+notes: 8
+maxscale: 8
+verbose: 0

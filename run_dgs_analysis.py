@@ -21,17 +21,62 @@
 
 import os
 import sys
+import glob
 
 from distortion_calibration import *
 from dgs_analysis import *
 
-if __name__ == '__main__':
+def run_test ():
+    '''
+    method to run a local test for debugging - this is a temporary method
+    '''
     test_file = 'C:\\data\\data\\stripes\\photoseives\\pismo\\image_DSC_0046_test\\test.JPG'
     dst = distortion_calibration (test_file)
     cal_test_file = dst.run ()
     
     gs = dgs_analysis (cal_test_file)
     gs.run ()
+    return
+
+def run_photoseive_tree (base_dir):
+    '''
+    method to run photoseives for a tree of subdirectories from the base_dir.
+    This looks for a config fil and 1 image. The config.txt file contains all 
+    the scaling data, the 1 image present is the 1 image to perform analysis on.
+    This helps avoid errors as it is physical, the image present is analysed.
+    
+    base_dir = base directory to start the walk
+    '''
+    
+    # walk down the dirs, looking for config files and images
+    for dir in os.walk (base_dir):
+        files = dir[2]
+        
+        # look for a config file
+        if files.count('config.txt') == 1:
+            # we found one, let's see try to find the image
+            images = glob.glob (os.path.join (dir[0], '*.JPG'))
+            if len (images) != 1:
+                print ('ERROR: there is a problem with the images here: ' + str(dir[0]))
+            else:    
+                # ok, looks good, there is 1 image, lets get that image name
+                image_name = images[0]
+                
+                # run the analysis
+                gs = dgs_analysis (image_name)
+                gs.run ()
+                
+    return
+
+
+
+if __name__ == '__main__':
+    
+    argentina_2014_directory = 'C:\\data\\data\\stripes\\argentina_2014'
+    run_photoseive_tree (argentina_2014_directory)
+    
+    
+
     
     
 

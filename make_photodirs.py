@@ -23,6 +23,8 @@ import os
 import sys
 import glob
 import shutil
+import numpy as np
+import pandas as pd
 
 def make_photodirs (target_dir):
     '''
@@ -49,14 +51,52 @@ def make_photodirs (target_dir):
         shutil.copy2 (default_config_file, os.path.join (os.getcwd(), dir_name, 'config.txt'))
         print ('completed: ' + im)
     
-    os.chdir (oldwd)    
+    os.chdir (oldwd)
+    print ('complete!')
+        
     return
+
+def make_key_dataframe (base_dir, output_dataframe):
+    '''
+    function to make a 'key' dataframe with a list of all the images we are going to analyze.
+    base_dir = base directory to walk down through
+    output_dataframe = the output file to write the dataframe
+    '''
+    indices = ('name', 'location')
+    key_dataframe = pd.DataFrame (index = indices)
+
+    for dir in os.walk (base_dir):
+        files = dir[2]
+        
+        # look for a config file
+        if files.count('config.txt') == 1:
+            # we found one, let's see try to find the image
+            images = glob.glob (os.path.join (dir[0], '*.JPG'))
+            if len (images) != 1:
+                print ('ERROR: there is a problem with the images here: ' + str(dir[0]))
+            else:    
+                # ok, looks good, there is 1 image, lets get that image name
+                image_name = images[0]
+                image_name_base = os.path.basename (image_name)
+                image_location = os.path.dirname (image_name)
+                
+                # construct the new row and append
+                add_row = pd.Series (data = (image_name_base, image_location), index = indices)
+                key_dataframe = key_dataframe.append (add_row, ignore_index = True)
+
+    # write out the dataframe to disk
+    key_dataframe.to_csv (output_dataframe, index = False)
+    print ('complete!')
+    
+    return
+
 
 if __name__ == '__main__':    
     target_dirs = 'C://data//data//stripes//photoseives//pismo'
-    make_photodirs (target_dirs)
+    #make_photodirs (target_dirs)
 
-
+    output_dataframe = 'C://data//data//stripes//photoseives//pismo_key.csv'
+    make_key_dataframe (target_dirs, output_dataframe)
 
 
 

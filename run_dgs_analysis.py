@@ -48,11 +48,11 @@ def run_photoseive_tree (base_dir):
     
     base_dir = base directory to start the walk
     '''
-    
+
     # walk down the dirs, looking for config files and images
     for dir in os.walk (base_dir):
         files = dir[2]
-        
+
         # look for a config file
         if files.count('config.txt') == 1:
             # we found one, let's see try to find the image
@@ -103,9 +103,24 @@ def run_calibration_tree (base_dir):
 ########################################################################################
 # MAIN
 if __name__ == '__main__':
+
+    # set directories
+    argentina_2014_directory = 'C:\\data\\data\\stripes\\photoseives\\argentina_2014'
+    argentina_2015_directory = 'C:\\data\\data\\stripes\\photoseives\\argentina_2015'
+    pismo_directory = 'C:\\data\\data\\stripes\\photoseives\\pismo'
+
+    # run the distortion calibration
+    run_calibration_tree (argentina_2014_directory)
+    run_calibration_tree (argentina_2015_directory)
+    run_calibration_tree (pismo_directory)
     
-    argentina_2014_directory = 'C:\\data\\data\\stripes\\argentina_2014'
-    run_photoseive_tree (argentina_2014_directory)
+    ## STOP! CROP THE PHOTOS! ##
+    ## MEASURE THE SCALES ##
+    
+    # run the photoseive calculations
+    # run_photoseive_tree (argentina_2014_directory)
+    # run_photoseive_tree (argentina_2015_directory)
+    # run_photoseive_tree (pismo_directory)
     
     
 

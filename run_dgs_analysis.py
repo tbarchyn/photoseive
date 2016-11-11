@@ -86,17 +86,17 @@ def run_calibration_tree (base_dir):
         
         # look for a config file
         if files.count('config.txt') == 1:
-            # we found one, let's see try to find the image
+            # we found one, let's see try to find the images
             images = glob.glob (os.path.join (dir[0], '*.JPG'))
-            if len (images) != 1:
-                print ('ERROR: there is a problem with the images here: ' + str(dir[0]))
-            else:    
-                # ok, looks good, there is 1 image, lets get that image name
-                image_name = images[0]
-                
+            
+            # ok let's do the calibration on all the images present
+            for i in images:
+
                 # run the unwarping
-                dst = distortion_calibration (image_name)
+                dst = distortion_calibration (i)
                 cal_test_file = dst.run ()
+                
+                print ('completed image: ' + i)
 
     return
     
@@ -110,7 +110,7 @@ if __name__ == '__main__':
     pismo_directory = 'C:\\data\\data\\stripes\\photoseives\\pismo'
 
     # run the distortion calibration
-    run_calibration_tree (argentina_2014_directory)
+    #run_calibration_tree (argentina_2014_directory)
     run_calibration_tree (argentina_2015_directory)
     run_calibration_tree (pismo_directory)
     

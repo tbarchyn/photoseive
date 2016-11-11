@@ -91,12 +91,16 @@ def run_calibration_tree (base_dir):
             
             # ok let's do the calibration on all the images present
             for i in images:
-
-                # run the unwarping
-                dst = distortion_calibration (i)
-                cal_test_file = dst.run ()
                 
-                print ('completed image: ' + i)
+                # check to see if we calibrated this image already
+                i_strip = i.strip ('.JPG')
+                if not i_strip[(len(i_strip) - 1)] == 'c':
+
+                    # run the unwarping
+                    dst = distortion_calibration (i)
+                    cal_test_file = dst.run ()
+                    
+                    print ('completed image: ' + i)
 
     return
     

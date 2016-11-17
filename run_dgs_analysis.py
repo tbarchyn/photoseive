@@ -22,6 +22,7 @@
 import os
 import sys
 import glob
+import numpy as np
 
 from distortion_calibration import *
 from dgs_analysis import *
@@ -39,7 +40,7 @@ def run_test ():
     gs.run ()
     return
 
-def run_photoseive_tree (base_dir):
+def run_photoseive_tree (base_dir, scales):
     '''
     method to run photoseives for a tree of subdirectories from the base_dir.
     This looks for a config file and 1 image. The config.txt file contains all 
@@ -64,7 +65,7 @@ def run_photoseive_tree (base_dir):
                 image_name = images[0]
                 
                 # run the analysis
-                gs = dgs_analysis (image_name)
+                gs = dgs_analysis (image_name, scales)
                 gs.run ()
                 
     return
@@ -113,16 +114,24 @@ if __name__ == '__main__':
     argentina_2015_directory = 'C:\\data\\data\\stripes\\photoseives\\argentina_2015'
     pismo_directory = 'C:\\data\\data\\stripes\\photoseives\\pismo'
 
+    # set the scales of analysis as linear interval
+    min_scale = 0.1
+    max_scale = 5.0
+    interval = 0.05
+    scales = np.arange (min_scale, max_scale, interval)
+
+    ##############################################################################
     # run the distortion calibration
-    #run_calibration_tree (argentina_2014_directory)
-    run_calibration_tree (argentina_2015_directory)
-    run_calibration_tree (pismo_directory)
+    # run_calibration_tree (argentina_2014_directory)
+    # run_calibration_tree (argentina_2015_directory)
+    # run_calibration_tree (pismo_directory)
     
     ## STOP! CROP THE PHOTOS! ##
     ## MEASURE THE SCALES ##
     
+    ##############################################################################
     # run the photoseive calculations
-    # run_photoseive_tree (argentina_2014_directory)
+    run_photoseive_tree (argentina_2014_directory, scales)
     # run_photoseive_tree (argentina_2015_directory)
     # run_photoseive_tree (pismo_directory)
     

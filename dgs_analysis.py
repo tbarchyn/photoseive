@@ -28,12 +28,14 @@ import numpy as np
 import pandas as pd
 
 class dgs_analysis:
-    def __init__ (self, image_file):
+    def __init__ (self, image_file, scales):
         '''
         constructor takes the file name of the image to evaluate
         image_file = the input image name
+        scales = input scales for analysis (a numpy array)
         '''
         self.image_file = image_file
+        self.scales = scales
         file_dir = os.path.dirname (image_file)
         self.config_file = os.path.join (file_dir, 'config.txt')
         self.stats_file = os.path.join (file_dir, 'stats.txt')
@@ -54,7 +56,7 @@ class dgs_analysis:
         if not self.config_file_error:
             self.dgs_stats = DGS.dgs (self.image_file, self.config ['density'], self.config ['resolution'],
                                       self.config ['dofilter'], self.config ['maxscale'], self.config ['notes'],
-                                      self.config ['verbose'])
+                                      self.config ['verbose'], scales = self.scales)
             
             # write the stats files
             self.write_stats ()

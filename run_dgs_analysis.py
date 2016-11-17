@@ -23,9 +23,11 @@ import os
 import sys
 import glob
 import numpy as np
+import pandas as pd
 
 from distortion_calibration import *
 from dgs_analysis import *
+from coallate_gsd_data import *
 
 def run_test ():
     '''
@@ -136,6 +138,7 @@ def run_calibration_tree (base_dir):
                     print ('completed image: ' + i)
 
     return
+
     
 ########################################################################################
 # MAIN
@@ -173,7 +176,16 @@ if __name__ == '__main__':
     # run_photoseive_tree (argentina_2015_directory)
     # run_photoseive_tree (pismo_directory)
     
+    ##############################################################################
+    # coallate the output data
+    argentina_2014_coallated_data = 'C:\\data\\data\\stripes\\photoseives\\argentina_2014.csv'
+    argentina_2015_coallated_data = 'C:\\data\\data\\stripes\\photoseives\\argentina_2015.csv'
+    pismo_coallated_data = 'C:\\data\\data\\stripes\\photoseives\\pismo.csv'
     
+    # run the coallate data function
+    coallate_gsd_data (argentina_2014_directory, argentina_2014_coallated_data)
+    # coallate_gsd_data (argentina_2015_directory, argentina_2015_coallated_data)
+    # coallate_gsd_data (pismo_directory, pismo_coallated_data)
 
     
     

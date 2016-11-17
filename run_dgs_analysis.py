@@ -48,6 +48,7 @@ def run_photoseive_tree (base_dir, scales):
     This helps avoid errors as it is physical, the image present is analysed.
     
     base_dir = base directory to start the walk
+    scales = user supplied scales
     '''
 
     # walk down the dirs, looking for config files and images
@@ -67,6 +68,37 @@ def run_photoseive_tree (base_dir, scales):
                 # run the analysis
                 gs = dgs_analysis (image_name, scales)
                 gs.run ()
+                
+    return
+
+def change_config (base_dir, key, value):
+    '''
+    method to change some part of the config file
+    
+    base_dir = base directory to start the walk
+    key = key to modify
+    value = value to modify the key to
+    '''
+
+    # walk down the dirs, looking for config files and images
+    for dir in os.walk (base_dir):
+        files = dir[2]
+
+        # look for a config file
+        if files.count('config.txt') == 1:
+            # we found one, let's see try to find the image
+            images = glob.glob (os.path.join (dir[0], '*.JPG'))
+            if len (images) != 1:
+                print ('ERROR: there is a problem with the images here: ' + str(dir[0]))
+            else:    
+                # ok, looks good, there is 1 image, lets get that image name
+                image_name = images[0]
+                
+                # init the dgs analysis object, then modify the config key and write
+                gs = dgs_analysis (image_name, None)
+                gs.config[key] = value
+                gs.write_config ()
+                
                 
     return
 
@@ -130,8 +162,14 @@ if __name__ == '__main__':
     ## MEASURE THE SCALES ##
     
     ##############################################################################
+    # change the density for more detail
+    # new_density = 10
+    # change_config (argentina_2014_directory, 'density', new_density)
+    # change_config (argentina_2015_directory, 'density', new_density)
+    # change_config (pismo_directory, 'density', new_density)
+    
     # run the photoseive calculations
-    run_photoseive_tree (argentina_2014_directory, scales)
+    # run_photoseive_tree (argentina_2014_directory, scales)
     # run_photoseive_tree (argentina_2015_directory)
     # run_photoseive_tree (pismo_directory)
     

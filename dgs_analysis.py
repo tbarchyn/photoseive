@@ -84,6 +84,18 @@ class dgs_analysis:
 
         return
     
+    def write_config (self):
+        '''
+        method to write the config file
+        '''
+        try:
+            with open (self.config_file, 'w') as f:
+                yaml.dump (self.config, f, default_flow_style = False)
+        except:
+            print ('Cannot write config file: ' + self.config_file)
+            
+        return
+    
     def write_stats (self):
         '''
         method to write the stats as a yaml file

@@ -96,6 +96,9 @@ def coallate_gsd_data (base_dir, output_file):
                     # check the keys 
                     if not init_keys == keys:
                         print ('WHOA! Error with the keys we found in: ' + directory)
+                        print (init_keys)
+                        print ('\n\n\n')
+                        print (keys)
                         sys.exit ()
                         
                 # append the data list

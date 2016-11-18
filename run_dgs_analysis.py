@@ -150,10 +150,9 @@ if __name__ == '__main__':
     pismo_directory = 'C:\\data\\data\\stripes\\photoseives\\pismo'
 
     # set the scales of analysis as linear interval
-    min_scale = 0.1
-    max_scale = 5.0
-    interval = 0.05
-    scales = np.arange (min_scale, max_scale, interval)
+    scales1 = np.arange (0.02, 0.5, 0.02)
+    scales2 = np.arange (0.5, 8.0, 0.2)
+    scales = np.append (scales1, scales2)
 
     ##############################################################################
     # run the distortion calibration
@@ -173,8 +172,8 @@ if __name__ == '__main__':
     
     # run the photoseive calculations
     # run_photoseive_tree (argentina_2014_directory, scales)
-    # run_photoseive_tree (argentina_2015_directory)
-    # run_photoseive_tree (pismo_directory)
+    # run_photoseive_tree (argentina_2015_directory, scales)
+    # run_photoseive_tree (pismo_directory, scales)
     
     ##############################################################################
     # coallate the output data
@@ -183,9 +182,9 @@ if __name__ == '__main__':
     pismo_coallated_data = 'C:\\data\\data\\stripes\\photoseives\\pismo.csv'
     
     # run the coallate data function
-    coallate_gsd_data (argentina_2014_directory, argentina_2014_coallated_data)
+    # coallate_gsd_data (argentina_2014_directory, argentina_2014_coallated_data)
     # coallate_gsd_data (argentina_2015_directory, argentina_2015_coallated_data)
-    # coallate_gsd_data (pismo_directory, pismo_coallated_data)
+    coallate_gsd_data (pismo_directory, pismo_coallated_data)
 
     
     

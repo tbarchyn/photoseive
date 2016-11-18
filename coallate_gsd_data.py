@@ -76,8 +76,8 @@ def coallate_gsd_data (base_dir, output_file):
                 keys = list (('dir_base', 'dir', 'dir_oneup_base'))
                 keys.extend (config.keys ())
                 keys.extend (stats.keys ())
-                keys.extend (list(perc['percentiles'].astype ('str')))
-                keys.extend (list(gsd['bins'].astype ('str')))
+                keys.extend (list('p_' + perc['percentiles'].astype ('str')))
+                keys.extend (list('b_' + gsd['bins'].astype ('str')))
                 
                 # create the data list
                 dta = list ((directory_base, directory, oneup_dir_base))

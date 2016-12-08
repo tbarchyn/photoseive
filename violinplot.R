@@ -25,10 +25,10 @@ violinplot <- function (psd, summary_results, samples, x_positions, colvector, y
     # this function creates violin plot for each wavelet density estimate
     # arguments:
     # psd is the psd list of data table
-    # summary_results is the summary table which we can extract means, etc.
-    # samples is a vector of the numeric samples for inclusion in the plot
-    # x_positions is the positioning of the violins
-    # colvector is the colour vector that is used to create colours
+    # summary_results = the summary table which we can extract means, etc.
+    # samples = a vector of the numeric samples for inclusion in the plot
+    # x_positions = the positioning of the violins
+    # colvector = the colour vector that is used to create colours
     
     violinspread <- 0.4     # spread of the violin edges
     plot_dimensions <- c((min(samples) - 1), (max(samples) + 1))
@@ -68,8 +68,7 @@ violinplot <- function (psd, summary_results, samples, x_positions, colvector, y
                                       summary_results$mean_gs[ (summary_results$id == samples[j]) ] )
             }
         }
-        points (samples, means_collection,
-                col = 'black')
+        points (samples, means_collection, col = 'black')
     }
 }
 

@@ -21,6 +21,9 @@
 
 source ('C://Users//tom//Dropbox//python//photoseive//violinplot.R')
 
+
+###################################################################
+# FUNCTIONS
 # get the column masks
 get_col_mask <- function (input_dataframe, first_letter) {
     # function to split up the names of the dataframe by a mask first letter
@@ -62,6 +65,15 @@ get_numbers <- function (input_dataframe, first_letter) {
     return (vals)
 }
 
+# make individual plots of each photoseive
+individual_plot <- function (input_dataframe, mask, filename) {
+    
+    
+    
+    
+    
+}
+
 ###################################################################
 # read in the data
 ar2014 <- read.csv ('C://data//data//stripes//photoseives//argentina_2014.csv')
@@ -71,8 +83,8 @@ pismo <- read.csv ('C://data//data//stripes//photoseives//pismo.csv')
 # get the masks for percentiles and gsd
 ar2014_percmask <- get_col_mask (ar2014, 'p')
 ar2014_gsdmask <- get_col_mask (ar2014, 'b')
-ar2014_percmask <- get_col_mask (ar2015, 'p')
-ar2014_gsdmask <- get_col_mask (ar2015, 'b')
+ar2015_percmask <- get_col_mask (ar2015, 'p')
+ar2015_gsdmask <- get_col_mask (ar2015, 'b')
 pismo_percmask <- get_col_mask (pismo, 'p')
 pismo_gsdmask <- get_col_mask (pismo, 'b')
 
@@ -81,7 +93,12 @@ ar2014_percbins <- get_numbers (ar2014, 'p')
 ar2014_gsdbins <- get_numbers (ar2014, 'b')
 ar2015_percbins <- get_numbers (ar2015, 'p')
 ar2015_gsdbins <- get_numbers (ar2015, 'b')
+pismo_percbins <- get_numbers (pismo, 'p')
+pismo_gsdbins <- get_numbers (pismo, 'b')
 
+###################################################################
+# plot individual plots of each site
+plot (ar2014_gsdbins, ar2014[1, ar2014_gsdmask])
 
 
 

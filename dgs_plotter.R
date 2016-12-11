@@ -83,6 +83,68 @@ individual_plot <- function (input_dataframe, row, gsd, mask, filename) {
     dev.off ()
 }
 
+# collection plot of an individual transect
+collection_plot <- function (input_dataframe, key, gsd, mask, filename) {
+    # function to make a collection plot across a given transect (or zone
+    # where it is meaningful to compare across) 
+    # input_dataframe = the input dataframe
+    # key = the input key dataframe with columns dir_base, and type, which
+    #       is one of s (stripe) or r (ripple).
+    # gsd = the grain size distribution x axis numbers
+    # mask = the column mask to use for the plot
+    # filename = the filename for the output png (optional)
+    
+    stripe_color <- 'red'
+    ripple_color <- 'blue'
+    
+    if (!missing (filename)) {
+        png (filename = filename)
+    }
+    
+    # find the max density to make the plot properly
+    max_density = 0.0
+    for (i in 1:nrow(key)) {
+        row_max <- max (input_dataframe[i, mask])
+        if (row_max > max_density) {
+            max_density <- row_max
+        }
+    }
+    
+    # make the plot starting with a prototype call
+    plot (gsd, input_dataframe [1, mask], cex = 0, ylim = c(0, max_density),
+          xlab = 'grainsize (mm)', ylab = 'relative frequency')
+    
+    # loop through the individual sites
+    for (i in 1:nrow(key)) {
+        # set color
+        if (key$type[i] == 's') {
+            color <- stripe_color
+        } else if (key$type[i] == 'r') {
+            color <- ripple_color
+        } else {
+            print ('undefined key type')
+        }
+        
+        # add the points
+        #points (gsd, input_dataframe [input_dataframe$dir_base == key$dir_base[i], mask],
+        #        col = color)
+        # add the lines
+        lines (gsd, input_dataframe [input_dataframe$dir_base == key$dir_base[i], mask],
+                col = color)
+    }
+    
+    # add a legend
+    legend (x = max(gsd) - 2, y = max_density, legend = c('stripes', 'ripples'),
+            col = c(stripe_color, ripple_color), lty = 1)
+
+    if (!missing(filename)) {
+        dev.off ()
+    }    
+}
+
+
+
+
 ###################################################################
 # read in the data
 ar2014 <- read.csv ('C://data//data//stripes//photoseives//argentina_2014.csv')
@@ -130,6 +192,22 @@ for (i in 1:nrow (pismo)) {
     individual_plot (pismo, i, pismo_gsdbins, pismo_gsdmask, filename)
     print (paste ('completed: ', i))
 }
+
+###################################################################
+# plot collections
+# these are collections across various transects to be plotted on the same
+# plot to faciliate better comparison between various types
+# ARGENTINA 2014
+ar2014_key <- read.csv ('C://data//data//stripes//photoseives//argentina_2014_key.csv')
+ar2014_filename <- 'C://data//data//stripes//photoseives//argentina_2014_collection.png'
+
+#collection_plot (ar2014, ar2014_key, ar2014_gsdbins, ar2014_gsdmask, ar2014_filename)
+collection_plot (ar2014, ar2014_key, ar2014_gsdbins, ar2014_gsdmask)
+
+
+
+
+
 
 
 

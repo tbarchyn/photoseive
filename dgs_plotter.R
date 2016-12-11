@@ -66,12 +66,21 @@ get_numbers <- function (input_dataframe, first_letter) {
 }
 
 # make individual plots of each photoseive
-individual_plot <- function (input_dataframe, mask, filename) {
+individual_plot <- function (input_dataframe, row, gsd, mask, filename) {
+    # function to make an individual plot for each individual site 
+    # input_dataframe = the input dataframe
+    # row = the row to make a plot for
+    # gsd = the grain size distribution x axis numbers
+    # mask = the column mask to use for the plot
+    # filename = the filename for the output png
     
-    
-    
-    
-    
+    plot_title = input_dataframe$dir_base [row]
+    png (filename = filename)
+    plot (gsd, input_dataframe [row, mask], col = 'red',
+          xlab = 'grainsize (mm)', ylab = 'relative frequency',
+          main = plot_title)
+    lines (gsd, input_dataframe [row, mask], col = 'red')
+    dev.off ()
 }
 
 ###################################################################
@@ -98,8 +107,29 @@ pismo_gsdbins <- get_numbers (pismo, 'b')
 
 ###################################################################
 # plot individual plots of each site
-plot (ar2014_gsdbins, ar2014[1, ar2014_gsdmask])
+# ARGENTINA 2014
+setwd ('C://data//data//stripes//photoseives//argentina_2014//plots')
+for (i in 1:nrow (ar2014)) {
+    filename = paste (ar2014$dir_base[i], '.png', sep = '')
+    individual_plot (ar2014, i, ar2014_gsdbins, ar2014_gsdmask, filename)
+    print (paste ('completed: ', i))
+}
 
+# ARGENTINA 2015
+setwd ('C://data//data//stripes//photoseives//argentina_2015//plots')
+for (i in 1:nrow (ar2015)) {
+    filename = paste (ar2015$dir_base[i], '.png', sep = '')
+    individual_plot (ar2015, i, ar2015_gsdbins, ar2015_gsdmask, filename)
+    print (paste ('completed: ', i))
+}
+
+# PISMO
+setwd ('C://data//data//stripes//photoseives//pismo//plots')
+for (i in 1:nrow (pismo)) {
+    filename = paste (pismo$dir_base[i], '.png', sep = '')
+    individual_plot (pismo, i, pismo_gsdbins, pismo_gsdmask, filename)
+    print (paste ('completed: ', i))
+}
 
 
 

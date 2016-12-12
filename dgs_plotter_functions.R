@@ -210,10 +210,8 @@ collection_plot_pismo <- function (input_dataframe, key, gsd, mask, filename) {
 }
 
 
-
-
 # mean plot of all the stripes and ripples in a collection
-mean_collection_plot <- function (input_dataframe, key, gsd, mask, filename) {
+mean_collection_plot <- function (input_dataframe, key, gsd, mask, filename, pismo_treatment) {
     # function to make a mean collection plot across a given transect (or zone
     # where it is meaningful to compare across) 
     # input_dataframe = the input dataframe
@@ -222,6 +220,7 @@ mean_collection_plot <- function (input_dataframe, key, gsd, mask, filename) {
     # gsd = the grain size distribution x axis numbers
     # mask = the column mask to use for the plot
     # filename = the filename for the output png (optional)
+    # pismo_treatment = the special boolean to deal with pismo
     
     stripe_color <- 'red'
     ripple_color <- 'blue'
@@ -230,53 +229,54 @@ mean_collection_plot <- function (input_dataframe, key, gsd, mask, filename) {
         png (filename = filename)
     }
     
+    # ensure we don't have any broken factors
+    input_dataframe$dir_oneup_base <- as.character (input_dataframe$dir_oneup_base)
+    input_dataframe$dir_base <- as.character (input_dataframe$dir_base)
+    key$dir_base <- as.character (key$dir_base)
+    
+    # do the special treatment for pismo where the images are in directories named
+    # by their image name (which doesn't correspond to site). The site corresponds
+    # to the dir_oneup_base, which is the directory oneup
+    if (pismo_treatment) {
+        input_dataframe$dir_base <- input_dataframe$dir_oneup_base
+    }
+    
     # take means of all the stripes and ripples
     stripe_names <- key$dir_base [key$type == 's']
     ripple_names <- key$dir_base [key$type == 'r']
     
-    cut_dataframe <- input_dataframe []
+    # assemble the stripes
+    cut_dataframe <- input_dataframe [1, ]          # make a base dataframe
     for (i in stripe_names) {
-        cut_data <- NULL
-        
-        
-        
-    }
-    #cut_dataframe <- input_dataframe [in]
-    
-    
-    
-    # find the max density to make the plot properly
-    max_density = 0.0
-    for (i in 1:nrow(key)) {
-        row_max <- max (input_dataframe [input_dataframe$dir_base == key$dir_base[i], mask])
-        if (row_max > max_density) {
-            max_density <- row_max
-        }
+        new_dataframe <- input_dataframe [input_dataframe$dir_oneup_base == i, ]
+        cut_dataframe <- rbind (cut_dataframe, new_dataframe)
     }
     
-    # make the plot starting with a prototype call
-    plot (gsd, input_dataframe [1, mask], cex = 0, ylim = c(0, max_density),
+    cut_dataframe <- cut_dataframe [-1, ]   # get rid of the first column
+    cut_dataframe <- cut_dataframe [, mask]
+    stripes <- apply (X = cut_dataframe, MARGIN = 2, FUN = mean)
+    
+    # assemble the ripples
+    cut_dataframe <- input_dataframe [1, ]          # make a base dataframe
+    for (i in ripple_names) {
+        new_dataframe <- input_dataframe [input_dataframe$dir_oneup_base == i, ]
+        cut_dataframe <- rbind (cut_dataframe, new_dataframe)
+    }
+    
+    cut_dataframe <- cut_dataframe [-1, ]   # get rid of the first column
+    cut_dataframe <- cut_dataframe [, mask]
+    ripples <- apply (X = cut_dataframe, MARGIN = 2, FUN = mean)
+
+    # find the maximum density
+    max_density <- max (c(max(ripples), max(stripes)))
+    
+    # setup the plots
+    plot (gsd, stripes, col = 'red', ylim = c(0, max_density), 
           xlab = 'grainsize (mm)', ylab = 'relative frequency')
-    
-    # loop through the individual sites
-    for (i in 1:nrow(key)) {
-        # set color
-        if (key$type[i] == 's') {
-            color <- stripe_color
-        } else if (key$type[i] == 'r') {
-            color <- ripple_color
-        } else {
-            print ('undefined key type')
-        }
-        
-        # add the points
-        #points (gsd, input_dataframe [input_dataframe$dir_base == key$dir_base[i], mask],
-        #        col = color)
-        # add the lines
-        lines (gsd, input_dataframe [input_dataframe$dir_base == key$dir_base[i], mask],
-               col = color)
-    }
-    
+    lines (gsd, stripes, col = 'red')
+    points (gsd, ripples, col = 'blue')
+    lines (gsd, ripples, col = 'blue')
+
     # add a legend
     legend (x = max(gsd) - 2, y = max_density, legend = c('stripes', 'ripples'),
             col = c(stripe_color, ripple_color), lty = 1)

@@ -248,18 +248,18 @@ mean_collection_plot <- function (input_dataframe, key, gsd, mask, filename, pis
     # assemble the stripes
     cut_dataframe <- input_dataframe [1, ]          # make a base dataframe
     for (i in stripe_names) {
-        new_dataframe <- input_dataframe [input_dataframe$dir_oneup_base == i, ]
+        new_dataframe <- input_dataframe [input_dataframe$dir_base == i, ]
         cut_dataframe <- rbind (cut_dataframe, new_dataframe)
     }
     
     cut_dataframe <- cut_dataframe [-1, ]   # get rid of the first column
     cut_dataframe <- cut_dataframe [, mask]
     stripes <- apply (X = cut_dataframe, MARGIN = 2, FUN = mean)
-    
+
     # assemble the ripples
     cut_dataframe <- input_dataframe [1, ]          # make a base dataframe
     for (i in ripple_names) {
-        new_dataframe <- input_dataframe [input_dataframe$dir_oneup_base == i, ]
+        new_dataframe <- input_dataframe [input_dataframe$dir_base == i, ]
         cut_dataframe <- rbind (cut_dataframe, new_dataframe)
     }
     

@@ -131,7 +131,7 @@ pismo_mean_filename_3 <- 'C://data//data//stripes//photoseives//pismo_means_coll
 mean_collection_plot (pismo, pismo_key_1, pismo_gsdbins, pismo_gsdmask, pismo_treatment = TRUE)
 mean_collection_plot (pismo, pismo_key_3, pismo_gsdbins, pismo_gsdmask, pismo_treatment = TRUE)
 mean_collection_plot (pismo, pismo_key_1, pismo_gsdbins, pismo_gsdmask, pismo_mean_filename_1, pismo_treatment = TRUE)
-mean_collection_plot (pismo, pismo_key_3, pismo_gsdbins, pismo_gsdmask, pismo_mean_filename_1, pismo_treatment = TRUE)
+mean_collection_plot (pismo, pismo_key_3, pismo_gsdbins, pismo_gsdmask, pismo_mean_filename_3, pismo_treatment = TRUE)
 
 
 

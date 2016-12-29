@@ -56,7 +56,7 @@ class dgs_analysis:
         if not self.config_file_error:
             self.dgs_stats = DGS.dgs (self.image_file, self.config ['density'], self.config ['resolution'],
                                       self.config ['dofilter'], self.config ['maxscale'], self.config ['notes'],
-                                      self.config ['verbose'], scales = self.scales)
+                                      self.config ['verbose'], minscale = self.config ['minscale'], scales = self.scales)
             
             # write the stats files
             self.write_stats ()

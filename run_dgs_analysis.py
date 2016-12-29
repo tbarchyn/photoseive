@@ -165,14 +165,20 @@ if __name__ == '__main__':
     
     ##############################################################################
     # change the density for more detail
-    # new_density = 10
-    # change_config (argentina_2014_directory, 'density', new_density)
-    # change_config (argentina_2015_directory, 'density', new_density)
-    # change_config (pismo_directory, 'density', new_density)
+    new_density = 10
+    change_config (argentina_2014_directory, 'density', new_density)
+    change_config (argentina_2015_directory, 'density', new_density)
+    change_config (pismo_directory, 'density', new_density)
+    
+    # add a minscale to the calculations (in pixels)
+    new_minscale = 3.14
+    change_config (argentina_2014_directory, 'minscale', new_minscale)
+    change_config (argentina_2015_directory, 'minscale', new_minscale)
+    change_config (pismo_directory, 'minscale', new_minscale)
     
     # run the photoseive calculations
     # run_photoseive_tree (argentina_2014_directory, scales)
-    # run_photoseive_tree (argentina_2015_directory, scales)
+    run_photoseive_tree (argentina_2015_directory, scales)
     # run_photoseive_tree (pismo_directory, scales)
     
     ##############################################################################
@@ -184,7 +190,7 @@ if __name__ == '__main__':
     # run the coallate data function
     # coallate_gsd_data (argentina_2014_directory, argentina_2014_coallated_data)
     # coallate_gsd_data (argentina_2015_directory, argentina_2015_coallated_data)
-    coallate_gsd_data (pismo_directory, pismo_coallated_data)
+    # coallate_gsd_data (pismo_directory, pismo_coallated_data)
 
     
     

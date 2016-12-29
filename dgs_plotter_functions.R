@@ -192,7 +192,7 @@ collection_plot_pismo <- function (input_dataframe, key, gsd, mask, filename, lo
         # mod for pismo, use dir_oneup_base
         cut_dataframe <- input_dataframe [input_dataframe$dir_oneup_base == key$dir_base[i], ]
         cut_dataframe <- cut_dataframe [, mask]
-        row_max <- max (as.numeric (cut_dataframe), na.rm = T)
+        row_max <- max (cut_dataframe, na.rm = T)
         if (!is.na(row_max)) {
             if (row_max > max_density) {
                 max_density <- row_max

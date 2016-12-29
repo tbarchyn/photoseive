@@ -69,22 +69,28 @@ individual_plot <- function (input_dataframe, row, gsd, mask, filename) {
     # gsd = the grain size distribution x axis numbers
     # mask = the column mask to use for the plot
     # filename = the filename for the output png
-    
-    
+
     input_dataframe [input_dataframe == 0.0] <- NA
     gsd[gsd == 0.0] <- NA
     
     plot_title = input_dataframe$dir_base [row]
-    png (filename = filename)
+    
+    if (!missing (filename)) {
+        png (filename = filename)
+    }
+    
     plot (gsd, input_dataframe [row, mask], col = 'red',
           xlab = 'grainsize (mm)', ylab = 'relative frequency',
-          main = plot_title, log = 'xy')
+          main = plot_title)
     lines (gsd, input_dataframe [row, mask], col = 'red')
-    dev.off ()
+    
+    if (!missing (filename)) {
+        dev.off ()
+    }    
 }
 
 # collection plot of an individual transect
-collection_plot <- function (input_dataframe, key, gsd, mask, filename) {
+collection_plot <- function (input_dataframe, key, gsd, mask, filename, logaxes = F) {
     # function to make a collection plot across a given transect (or zone
     # where it is meaningful to compare across) 
     # input_dataframe = the input dataframe
@@ -93,6 +99,7 @@ collection_plot <- function (input_dataframe, key, gsd, mask, filename) {
     # gsd = the grain size distribution x axis numbers
     # mask = the column mask to use for the plot
     # filename = the filename for the output png (optional)
+    # logaxes = use log axes or not
     
     stripe_color <- 'red'
     ripple_color <- 'blue'
@@ -105,7 +112,7 @@ collection_plot <- function (input_dataframe, key, gsd, mask, filename) {
     }
     
     # find the max density to make the plot properly
-    max_density = 1e-10
+    max_density <- 1e-10
     for (i in 1:nrow(key)) {
         row_max <- max (input_dataframe[input_dataframe$dir_base == key$dir_base[i], mask])
         if (!is.na(row_max)) {
@@ -116,8 +123,13 @@ collection_plot <- function (input_dataframe, key, gsd, mask, filename) {
     }
     
     # make the plot starting with a prototype call
-    plot (gsd, input_dataframe [1, mask], cex = 0, ylim = c(1e-5, max_density),
-          xlab = 'grainsize (mm)', ylab = 'relative frequency', log = 'xy')
+    if (logaxes) {
+        plot (gsd, input_dataframe [1, mask], cex = 0, ylim = c(1e-5, max_density),
+              xlab = 'grainsize (mm)', ylab = 'relative frequency', log = 'xy')
+    } else {
+        plot (gsd, input_dataframe [1, mask], cex = 0, 
+              xlab = 'grainsize (mm)', ylab = 'relative frequency')
+    }
     
     # loop through the individual sites
     for (i in 1:nrow(key)) {
@@ -147,7 +159,7 @@ collection_plot <- function (input_dataframe, key, gsd, mask, filename) {
     }    
 }
 
-collection_plot_pismo <- function (input_dataframe, key, gsd, mask, filename) {
+collection_plot_pismo <- function (input_dataframe, key, gsd, mask, filename, logaxes = F) {
     # function to make a collection plot across a given transect (or zone
     # where it is meaningful to compare across). Special for pismo. 
     # input_dataframe = the input dataframe
@@ -156,6 +168,7 @@ collection_plot_pismo <- function (input_dataframe, key, gsd, mask, filename) {
     # gsd = the grain size distribution x axis numbers
     # mask = the column mask to use for the plot
     # filename = the filename for the output png (optional)
+    # logaxes = use log axes or not
     
     stripe_color <- 'red'
     ripple_color <- 'blue'
@@ -172,7 +185,7 @@ collection_plot_pismo <- function (input_dataframe, key, gsd, mask, filename) {
     }
     
     # find the max density to make the plot properly
-    max_density = 1e-10
+    max_density <- 1e-10
     for (i in 1:nrow(key)) {
         # mod for pismo, use dir_oneup_base
         cut_dataframe <- input_dataframe [input_dataframe$dir_oneup_base == key$dir_base[i], ]
@@ -186,8 +199,14 @@ collection_plot_pismo <- function (input_dataframe, key, gsd, mask, filename) {
     }
 
     # make the plot starting with a prototype call
-    plot (gsd, input_dataframe [1, mask], cex = 0, ylim = c(1e-5, max_density),
+    if (logaxes) {
+        plot (gsd, input_dataframe [1, mask], cex = 0, ylim = c(1e-5, max_density),
           xlab = 'grainsize (mm)', ylab = 'relative frequency', log = 'xy')
+    } else {
+        plot (gsd, input_dataframe [1, mask], cex = 0, ylim = c(1e-5, max_density),
+              xlab = 'grainsize (mm)', ylab = 'relative frequency')
+    }
+    
     
     # loop through the individual sites
     for (i in 1:nrow(key)) {
@@ -224,7 +243,8 @@ collection_plot_pismo <- function (input_dataframe, key, gsd, mask, filename) {
 
 
 # mean plot of all the stripes and ripples in a collection
-mean_collection_plot <- function (input_dataframe, key, gsd, mask, filename, pismo_treatment) {
+mean_collection_plot <- function (input_dataframe, key, gsd, mask, filename, pismo_treatment,
+                                  logaxes = F) {
     # function to make a mean collection plot across a given transect (or zone
     # where it is meaningful to compare across) 
     # input_dataframe = the input dataframe
@@ -234,6 +254,7 @@ mean_collection_plot <- function (input_dataframe, key, gsd, mask, filename, pis
     # mask = the column mask to use for the plot
     # filename = the filename for the output png (optional)
     # pismo_treatment = the special boolean to deal with pismo
+    # logaxes = use log axes
     
     stripe_color <- 'red'
     ripple_color <- 'blue'
@@ -287,8 +308,14 @@ mean_collection_plot <- function (input_dataframe, key, gsd, mask, filename, pis
     max_density <- max (c(max(ripples, na.rm = T), max(stripes, na.rm = T)))
     
     # setup the plots
-    plot (gsd, stripes, col = 'red', ylim = c(1e-5, max_density), 
-          xlab = 'grainsize (mm)', ylab = 'relative frequency', log = 'xy')
+    if (logaxes) {
+        plot (gsd, stripes, col = 'red', ylim = c(1e-5, max_density), 
+              xlab = 'grainsize (mm)', ylab = 'relative frequency', log = 'xy')
+    } else {
+        plot (gsd, stripes, col = 'red', ylim = c(1e-5, max_density), 
+              xlab = 'grainsize (mm)', ylab = 'relative frequency')
+    }
+    
     lines (gsd, stripes, col = 'red')
     points (gsd, ripples, col = 'blue')
     lines (gsd, ripples, col = 'blue')

@@ -70,11 +70,15 @@ individual_plot <- function (input_dataframe, row, gsd, mask, filename) {
     # mask = the column mask to use for the plot
     # filename = the filename for the output png
     
+    
+    input_dataframe [input_dataframe == 0.0] <- NA
+    gsd[gsd == 0.0] <- NA
+    
     plot_title = input_dataframe$dir_base [row]
     png (filename = filename)
     plot (gsd, input_dataframe [row, mask], col = 'red',
           xlab = 'grainsize (mm)', ylab = 'relative frequency',
-          main = plot_title)
+          main = plot_title, log = 'xy')
     lines (gsd, input_dataframe [row, mask], col = 'red')
     dev.off ()
 }
@@ -93,22 +97,27 @@ collection_plot <- function (input_dataframe, key, gsd, mask, filename) {
     stripe_color <- 'red'
     ripple_color <- 'blue'
     
+    input_dataframe [input_dataframe == 0.0] <- NA
+    gsd[gsd == 0.0] <- NA
+    
     if (!missing (filename)) {
         png (filename = filename)
     }
     
     # find the max density to make the plot properly
-    max_density = 0.0
+    max_density = 1e-10
     for (i in 1:nrow(key)) {
         row_max <- max (input_dataframe[input_dataframe$dir_base == key$dir_base[i], mask])
-        if (row_max > max_density) {
-            max_density <- row_max
-        }
+        if (!is.na(row_max)) {
+            if (row_max > max_density) {
+                max_density <- row_max
+            }
+        }    
     }
     
     # make the plot starting with a prototype call
-    plot (gsd, input_dataframe [1, mask], cex = 0, ylim = c(0, max_density),
-          xlab = 'grainsize (mm)', ylab = 'relative frequency')
+    plot (gsd, input_dataframe [1, mask], cex = 0, ylim = c(1e-5, max_density),
+          xlab = 'grainsize (mm)', ylab = 'relative frequency', log = 'xy')
     
     # loop through the individual sites
     for (i in 1:nrow(key)) {
@@ -151,6 +160,9 @@ collection_plot_pismo <- function (input_dataframe, key, gsd, mask, filename) {
     stripe_color <- 'red'
     ripple_color <- 'blue'
     
+    input_dataframe [input_dataframe == 0.0] <- NA
+    gsd[gsd == 0.0] <- NA
+    
     # ensure we don't have any broken factors
     input_dataframe$dir_oneup_base <- as.character (input_dataframe$dir_oneup_base)
     key$dir_base <- as.character (key$dir_base)
@@ -160,21 +172,22 @@ collection_plot_pismo <- function (input_dataframe, key, gsd, mask, filename) {
     }
     
     # find the max density to make the plot properly
-    max_density = 0.0
+    max_density = 1e-10
     for (i in 1:nrow(key)) {
         # mod for pismo, use dir_oneup_base
         cut_dataframe <- input_dataframe [input_dataframe$dir_oneup_base == key$dir_base[i], ]
         cut_dataframe <- cut_dataframe [, mask]
         row_max <- max (cut_dataframe)
-        
-        if (row_max > max_density) {
-            max_density <- row_max
-        }
+        if (!is.na(row_max)) {
+            if (row_max > max_density) {
+                max_density <- row_max
+            }
+        }    
     }
 
     # make the plot starting with a prototype call
-    plot (gsd, input_dataframe [1, mask], cex = 0, ylim = c(0, max_density),
-          xlab = 'grainsize (mm)', ylab = 'relative frequency')
+    plot (gsd, input_dataframe [1, mask], cex = 0, ylim = c(1e-5, max_density),
+          xlab = 'grainsize (mm)', ylab = 'relative frequency', log = 'xy')
     
     # loop through the individual sites
     for (i in 1:nrow(key)) {
@@ -225,6 +238,9 @@ mean_collection_plot <- function (input_dataframe, key, gsd, mask, filename, pis
     stripe_color <- 'red'
     ripple_color <- 'blue'
     
+    input_dataframe [input_dataframe == 0.0] <- NA
+    gsd[gsd == 0.0] <- NA
+    
     if (!missing (filename)) {
         png (filename = filename)
     }
@@ -268,11 +284,11 @@ mean_collection_plot <- function (input_dataframe, key, gsd, mask, filename, pis
     ripples <- apply (X = cut_dataframe, MARGIN = 2, FUN = mean)
 
     # find the maximum density
-    max_density <- max (c(max(ripples), max(stripes)))
+    max_density <- max (c(max(ripples, na.rm = T), max(stripes, na.rm = T)))
     
     # setup the plots
-    plot (gsd, stripes, col = 'red', ylim = c(0, max_density), 
-          xlab = 'grainsize (mm)', ylab = 'relative frequency')
+    plot (gsd, stripes, col = 'red', ylim = c(1e-5, max_density), 
+          xlab = 'grainsize (mm)', ylab = 'relative frequency', log = 'xy')
     lines (gsd, stripes, col = 'red')
     points (gsd, ripples, col = 'blue')
     lines (gsd, ripples, col = 'blue')

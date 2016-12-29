@@ -114,20 +114,22 @@ collection_plot <- function (input_dataframe, key, gsd, mask, filename, logaxes 
     # find the max density to make the plot properly
     max_density <- 1e-10
     for (i in 1:nrow(key)) {
-        row_max <- max (input_dataframe[input_dataframe$dir_base == key$dir_base[i], mask])
+        row_max <- max (as.numeric (
+            input_dataframe[input_dataframe$dir_base == key$dir_base[i], mask]),
+            na.rm = T)
         if (!is.na(row_max)) {
             if (row_max > max_density) {
                 max_density <- row_max
             }
         }    
     }
-    
+
     # make the plot starting with a prototype call
     if (logaxes) {
         plot (gsd, input_dataframe [1, mask], cex = 0, ylim = c(1e-5, max_density),
               xlab = 'grainsize (mm)', ylab = 'relative frequency', log = 'xy')
     } else {
-        plot (gsd, input_dataframe [1, mask], cex = 0, 
+        plot (gsd, input_dataframe [1, mask], cex = 0, ylim = c(1e-5, max_density),
               xlab = 'grainsize (mm)', ylab = 'relative frequency')
     }
     
@@ -190,7 +192,7 @@ collection_plot_pismo <- function (input_dataframe, key, gsd, mask, filename, lo
         # mod for pismo, use dir_oneup_base
         cut_dataframe <- input_dataframe [input_dataframe$dir_oneup_base == key$dir_base[i], ]
         cut_dataframe <- cut_dataframe [, mask]
-        row_max <- max (cut_dataframe)
+        row_max <- max (as.numeric (cut_dataframe), na.rm = T)
         if (!is.na(row_max)) {
             if (row_max > max_density) {
                 max_density <- row_max

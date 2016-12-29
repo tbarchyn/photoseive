@@ -432,7 +432,7 @@ quantile_collection_plot <- function (input_dataframe, key, gsd, mask, filename,
     lines (gsd, ripples_0.5, col = ripple_color)
     
     # add a legend, showing the quantiles
-    legend (x = max(gsd) - 2, y = max_density, 
+    legend (x = max(gsd) - 3, y = max_density, 
             legend = c('90%, 10% stripes', '90%, 10% ripples', '50% stripes', '50% ripples',
                        '75% to 25% stripes', '75% to 25% ripples'),
             col = c(stripe_color, ripple_color, stripe_color, ripple_color,
@@ -448,5 +448,120 @@ quantile_collection_plot <- function (input_dataframe, key, gsd, mask, filename,
     }    
 }
 
+# quantile plot of all the stripes and ripples as a ratio of ripple / stripe
+quantile_ratio_plot <- function (input_dataframe, key, gsd, mask, filename, pismo_treatment,
+                                      logaxes = F) {
+    # function to make a median collection plot across a given transect (or zone
+    # where it is meaningful to compare across). This plots the ratio of ripple / stripe
+    # input_dataframe = the input dataframe
+    # key = the input key dataframe with columns dir_base, and type, which
+    #       is one of s (stripe) or r (ripple).
+    # gsd = the grain size distribution x axis numbers
+    # mask = the column mask to use for the plot
+    # filename = the filename for the output png (optional)
+    # pismo_treatment = the special boolean to deal with pismo
+    # logaxes = use log axes
+    
+    ratio_color = 'forestgreen'
+
+    input_dataframe [input_dataframe == 0.0] <- NA
+    gsd[gsd == 0.0] <- NA
+    
+    if (!missing (filename)) {
+        png (filename = filename)
+    }
+    
+    # ensure we don't have any broken factors
+    input_dataframe$dir_oneup_base <- as.character (input_dataframe$dir_oneup_base)
+    input_dataframe$dir_base <- as.character (input_dataframe$dir_base)
+    key$dir_base <- as.character (key$dir_base)
+    
+    # do the special treatment for pismo where the images are in directories named
+    # by their image name (which doesn't correspond to site). The site corresponds
+    # to the dir_oneup_base, which is the directory oneup
+    if (pismo_treatment) {
+        input_dataframe$dir_base <- input_dataframe$dir_oneup_base
+    }
+    
+    # take means of all the stripes and ripples
+    stripe_names <- key$dir_base [key$type == 's']
+    ripple_names <- key$dir_base [key$type == 'r']
+    
+    # assemble the stripes
+    cut_dataframe <- input_dataframe [1, ]          # make a base dataframe
+    for (i in stripe_names) {
+        new_dataframe <- input_dataframe [input_dataframe$dir_base == i, ]
+        cut_dataframe <- rbind (cut_dataframe, new_dataframe)
+    }
+    
+    cut_dataframe <- cut_dataframe [-1, ]   # get rid of the first column
+    cut_dataframe <- cut_dataframe [, mask]
+    stripes_0.1 <- apply (X = cut_dataframe, MARGIN = 2, FUN = quantile, probs = 0.1, na.rm = T)
+    stripes_0.25 <- apply (X = cut_dataframe, MARGIN = 2, FUN = quantile, probs = 0.25, na.rm = T)
+    stripes_0.5 <- apply (X = cut_dataframe, MARGIN = 2, FUN = quantile, probs = 0.5, na.rm = T)
+    stripes_0.75 <- apply (X = cut_dataframe, MARGIN = 2, FUN = quantile, probs = 0.75, na.rm = T)
+    stripes_0.9 <- apply (X = cut_dataframe, MARGIN = 2, FUN = quantile, probs = 0.9, na.rm = T)
+    
+    # assemble the ripples
+    cut_dataframe <- input_dataframe [1, ]          # make a base dataframe
+    for (i in ripple_names) {
+        new_dataframe <- input_dataframe [input_dataframe$dir_base == i, ]
+        cut_dataframe <- rbind (cut_dataframe, new_dataframe)
+    }
+    
+    cut_dataframe <- cut_dataframe [-1, ]   # get rid of the first column
+    cut_dataframe <- cut_dataframe [, mask]
+    ripples_0.1 <- apply (X = cut_dataframe, MARGIN = 2, FUN = quantile, probs = 0.1, na.rm = T)
+    ripples_0.25 <- apply (X = cut_dataframe, MARGIN = 2, FUN = quantile, probs = 0.25, na.rm = T)
+    ripples_0.5 <- apply (X = cut_dataframe, MARGIN = 2, FUN = quantile, probs = 0.55, na.rm = T)
+    ripples_0.75 <- apply (X = cut_dataframe, MARGIN = 2, FUN = quantile, probs = 0.75, na.rm = T)
+    ripples_0.9 <- apply (X = cut_dataframe, MARGIN = 2, FUN = quantile, probs = 0.9, na.rm = T)
+    
+    # calculate the ratio of ripple to stripe for every quantile
+    ratio_0.9 <- ripples_0.9 / stripes_0.9
+    ratio_0.75 <- ripples_0.75 / stripes_0.75
+    ratio_0.5 <- ripples_0.5 / stripes_0.5
+    ratio_0.25 <- ripples_0.25 / stripes_0.25
+    ratio_0.1 <- ripples_0.1 / stripes_0.1
+    
+    # find the maximum value
+    max_ratio <- max (c(
+        max (ratio_0.9, na.rm = T),
+        max (ratio_0.75, na.rm = T),
+        max (ratio_0.5, na.rm = T),
+        max (ratio_0.25, na.rm = T),
+        max (ratio_0.1, na.rm = T)
+    ), na.rm = T)
+    
+    # setup the plots
+    if (logaxes) {
+        plot (gsd, ratio_0.5, col = 'red', cex = 0.0, ylim = c(1e-5, max_ratio), 
+              xlab = 'grainsize (mm)', ylab = 'ripples / stripes', log = 'xy')
+    } else {
+        plot (gsd, ratio_0.5, col = 'red', cex = 0.0, ylim = c(1e-5, max_ratio), 
+              xlab = 'grainsize (mm)', ylab = 'ripples / stripes')
+    }
+    
+    # add a grey line at 0
+    abline (h = 1, col = 'grey')
+    
+    # add the lines
+    #lines (gsd, ratio_0.9, col = ratio_color, lty = 3)
+    lines (gsd, ratio_0.75, col = ratio_color, lty = 3)
+    lines (gsd, ratio_0.5, col = ratio_color, lwd = 1)
+    lines (gsd, ratio_0.25, col = ratio_color, lty = 5)
+    #lines (gsd, ratio_0.1, col = ratio_color, lty = 3)
+
+    # add a legend, showing the quantiles
+    legend (x = 0, y = max_ratio, 
+            legend = c('75%', '50%', '25%'),
+            col = c(ratio_color, ratio_color, ratio_color),
+            lty = c(3, 1, 5),
+            bty = 'n')
+    
+    if (!missing(filename)) {
+        dev.off ()
+    }    
+}
 
 

@@ -153,6 +153,25 @@ quantile_collection_plot (pismo, pismo_key_1, pismo_gsdbins, pismo_gsdmask, pism
 quantile_collection_plot (pismo, pismo_key_3, pismo_gsdbins, pismo_gsdmask, pismo_quantile_filename_3, pismo_treatment = TRUE)
 
 
+# RATIO plots
+# argentina 2015
+ar2014_ratio_filename <- 'C://data//data//stripes//photoseives//argentina_2014_quantile_ratio.png'
+quantile_ratio_plot (ar2014, ar2014_key, ar2014_gsdbins, ar2014_gsdmask, pismo_treatment = FALSE)
+quantile_ratio_plot (ar2014, ar2014_key, ar2014_gsdbins, ar2014_gsdmask, ar2014_quantile_filename, pismo_treatment = FALSE)
+
+# argentina 2015
+ar2015_ratio_filename <- 'C://data//data//stripes//photoseives//argentina_2015_quantile_ratio.png'
+quantile_ratio_plot (ar2015, ar2015_key, ar2015_gsdbins, ar2015_gsdmask, pismo_treatment = FALSE)
+quantile_ratio_plot (ar2015, ar2015_key, ar2015_gsdbins, ar2015_gsdmask, ar2015_quantile_filename, pismo_treatment = FALSE)
+
+# pismo
+pismo_ratio_filename_1 <- 'C://data//data//stripes//photoseives//pismo_quantile_ratio_1.png'
+pismo_ratio_filename_3 <- 'C://data//data//stripes//photoseives//pismo_quantile_ratio_3.png'
+
+quantile_ratio_plot (pismo, pismo_key_1, pismo_gsdbins, pismo_gsdmask, pismo_treatment = TRUE)
+quantile_ratio_plot (pismo, pismo_key_3, pismo_gsdbins, pismo_gsdmask, pismo_treatment = TRUE)
+quantile_ratio_plot (pismo, pismo_key_1, pismo_gsdbins, pismo_gsdmask, pismo_quantile_filename_1, pismo_treatment = TRUE)
+quantile_ratio_plot (pismo, pismo_key_3, pismo_gsdbins, pismo_gsdmask, pismo_quantile_filename_3, pismo_treatment = TRUE)
 
 
 

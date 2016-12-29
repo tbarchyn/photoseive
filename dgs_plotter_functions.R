@@ -62,17 +62,25 @@ get_numbers <- function (input_dataframe, first_letter) {
 }
 
 # make individual plots of each photoseive
-individual_plot <- function (input_dataframe, row, gsd, mask, filename) {
+individual_plot <- function (input_dataframe, row, gsd, mask, log2_gsd = F, filename) {
     # function to make an individual plot for each individual site 
     # input_dataframe = the input dataframe
     # row = the row to make a plot for
     # gsd = the grain size distribution x axis numbers
     # mask = the column mask to use for the plot
+    # log2_gsd = boolean to control whether or not to plot gsd as log2(gsd)
     # filename = the filename for the output png
 
     input_dataframe [input_dataframe == 0.0] <- NA
     gsd[gsd == 0.0] <- NA
     
+    if (log2_gsd) {
+        gsd <- log2 (gsd)
+        x_label <- 'log2 (grainsize) (log2 (mm))'
+    } else {
+        x_label <- 'grainsize (mm)'
+    }
+
     plot_title = input_dataframe$dir_base [row]
     
     if (!missing (filename)) {
@@ -80,7 +88,7 @@ individual_plot <- function (input_dataframe, row, gsd, mask, filename) {
     }
     
     plot (gsd, input_dataframe [row, mask], col = 'red',
-          xlab = 'grainsize (mm)', ylab = 'relative frequency',
+          xlab = x_label, ylab = 'relative frequency',
           main = plot_title)
     lines (gsd, input_dataframe [row, mask], col = 'red')
     
@@ -90,7 +98,8 @@ individual_plot <- function (input_dataframe, row, gsd, mask, filename) {
 }
 
 # collection plot of an individual transect
-collection_plot <- function (input_dataframe, key, gsd, mask, filename, logaxes = F) {
+collection_plot <- function (input_dataframe, key, gsd, mask, filename, log2_gsd = F, 
+                             logaxes = F) {
     # function to make a collection plot across a given transect (or zone
     # where it is meaningful to compare across) 
     # input_dataframe = the input dataframe
@@ -99,13 +108,21 @@ collection_plot <- function (input_dataframe, key, gsd, mask, filename, logaxes 
     # gsd = the grain size distribution x axis numbers
     # mask = the column mask to use for the plot
     # filename = the filename for the output png (optional)
+    # log2_gsd = boolean to control whether or not to plot gsd as log2(gsd)
     # logaxes = use log axes or not
-    
+
     stripe_color <- 'red'
     ripple_color <- 'blue'
     
     input_dataframe [input_dataframe == 0.0] <- NA
     gsd[gsd == 0.0] <- NA
+    
+    if (log2_gsd) {
+        gsd <- log2 (gsd)
+        x_label <- 'log2 (grainsize) (log2 (mm))'
+    } else {
+        x_label <- 'grainsize (mm)'
+    }
     
     if (!missing (filename)) {
         png (filename = filename)
@@ -127,10 +144,10 @@ collection_plot <- function (input_dataframe, key, gsd, mask, filename, logaxes 
     # make the plot starting with a prototype call
     if (logaxes) {
         plot (gsd, input_dataframe [1, mask], cex = 0, ylim = c(1e-5, max_density),
-              xlab = 'grainsize (mm)', ylab = 'relative frequency', log = 'xy')
+              xlab = x_label, ylab = 'relative frequency', log = 'xy')
     } else {
         plot (gsd, input_dataframe [1, mask], cex = 0, ylim = c(1e-5, max_density),
-              xlab = 'grainsize (mm)', ylab = 'relative frequency')
+              xlab = x_label, ylab = 'relative frequency')
     }
     
     # loop through the individual sites
@@ -161,7 +178,8 @@ collection_plot <- function (input_dataframe, key, gsd, mask, filename, logaxes 
     }    
 }
 
-collection_plot_pismo <- function (input_dataframe, key, gsd, mask, filename, logaxes = F) {
+collection_plot_pismo <- function (input_dataframe, key, gsd, mask, filename, log2_gsd = F,
+                                   logaxes = F) {
     # function to make a collection plot across a given transect (or zone
     # where it is meaningful to compare across). Special for pismo. 
     # input_dataframe = the input dataframe
@@ -170,6 +188,7 @@ collection_plot_pismo <- function (input_dataframe, key, gsd, mask, filename, lo
     # gsd = the grain size distribution x axis numbers
     # mask = the column mask to use for the plot
     # filename = the filename for the output png (optional)
+    # log2_gsd = boolean to control whether or not to plot gsd as log2(gsd)
     # logaxes = use log axes or not
     
     stripe_color <- 'red'
@@ -181,6 +200,13 @@ collection_plot_pismo <- function (input_dataframe, key, gsd, mask, filename, lo
     # ensure we don't have any broken factors
     input_dataframe$dir_oneup_base <- as.character (input_dataframe$dir_oneup_base)
     key$dir_base <- as.character (key$dir_base)
+    
+    if (log2_gsd) {
+        gsd <- log2 (gsd)
+        x_label <- 'log2 (grainsize) (log2 (mm))'
+    } else {
+        x_label <- 'grainsize (mm)'
+    }
     
     if (!missing (filename)) {
         png (filename = filename)
@@ -203,10 +229,10 @@ collection_plot_pismo <- function (input_dataframe, key, gsd, mask, filename, lo
     # make the plot starting with a prototype call
     if (logaxes) {
         plot (gsd, input_dataframe [1, mask], cex = 0, ylim = c(1e-5, max_density),
-          xlab = 'grainsize (mm)', ylab = 'relative frequency', log = 'xy')
+          xlab = x_label, ylab = 'relative frequency', log = 'xy')
     } else {
         plot (gsd, input_dataframe [1, mask], cex = 0, ylim = c(1e-5, max_density),
-              xlab = 'grainsize (mm)', ylab = 'relative frequency')
+              xlab = x_label, ylab = 'relative frequency')
     }
     
     
@@ -246,7 +272,7 @@ collection_plot_pismo <- function (input_dataframe, key, gsd, mask, filename, lo
 
 # mean plot of all the stripes and ripples in a collection
 mean_collection_plot <- function (input_dataframe, key, gsd, mask, filename, pismo_treatment,
-                                  logaxes = F) {
+                                  log2_gsd = F, logaxes = F) {
     # function to make a mean collection plot across a given transect (or zone
     # where it is meaningful to compare across) 
     # input_dataframe = the input dataframe
@@ -256,6 +282,7 @@ mean_collection_plot <- function (input_dataframe, key, gsd, mask, filename, pis
     # mask = the column mask to use for the plot
     # filename = the filename for the output png (optional)
     # pismo_treatment = the special boolean to deal with pismo
+    # log2_gsd = boolean to control whether or not to plot gsd as log2(gsd)
     # logaxes = use log axes
     
     stripe_color <- 'red'
@@ -263,6 +290,13 @@ mean_collection_plot <- function (input_dataframe, key, gsd, mask, filename, pis
     
     input_dataframe [input_dataframe == 0.0] <- NA
     gsd[gsd == 0.0] <- NA
+    
+    if (log2_gsd) {
+        gsd <- log2 (gsd)
+        x_label <- 'log2 (grainsize) (log2 (mm))'
+    } else {
+        x_label <- 'grainsize (mm)'
+    }
     
     if (!missing (filename)) {
         png (filename = filename)
@@ -312,10 +346,10 @@ mean_collection_plot <- function (input_dataframe, key, gsd, mask, filename, pis
     # setup the plots
     if (logaxes) {
         plot (gsd, stripes, col = 'red', ylim = c(1e-5, max_density), 
-              xlab = 'grainsize (mm)', ylab = 'relative frequency', log = 'xy')
+              xlab = x_label, ylab = 'relative frequency', log = 'xy')
     } else {
         plot (gsd, stripes, col = 'red', ylim = c(1e-5, max_density), 
-              xlab = 'grainsize (mm)', ylab = 'relative frequency')
+              xlab = x_label, ylab = 'relative frequency')
     }
     
     lines (gsd, stripes, col = 'red')
@@ -333,7 +367,7 @@ mean_collection_plot <- function (input_dataframe, key, gsd, mask, filename, pis
 
 # quantile plot of all the stripes and ripples in a collection
 quantile_collection_plot <- function (input_dataframe, key, gsd, mask, filename, pismo_treatment,
-                                  logaxes = F) {
+                                      log2_gsd = F, logaxes = F) {
     # function to make a median collection plot across a given transect (or zone
     # where it is meaningful to compare across) 
     # input_dataframe = the input dataframe
@@ -343,6 +377,7 @@ quantile_collection_plot <- function (input_dataframe, key, gsd, mask, filename,
     # mask = the column mask to use for the plot
     # filename = the filename for the output png (optional)
     # pismo_treatment = the special boolean to deal with pismo
+    # log2_gsd = boolean to control whether or not to plot gsd as log2(gsd)
     # logaxes = use log axes
     
     stripe_color <- 'red'
@@ -351,6 +386,13 @@ quantile_collection_plot <- function (input_dataframe, key, gsd, mask, filename,
     
     input_dataframe [input_dataframe == 0.0] <- NA
     gsd[gsd == 0.0] <- NA
+    
+    if (log2_gsd) {
+        gsd <- log2 (gsd)
+        x_label <- 'log2 (grainsize) (log2 (mm))'
+    } else {
+        x_label <- 'grainsize (mm)'
+    }
     
     if (!missing (filename)) {
         png (filename = filename)
@@ -408,10 +450,10 @@ quantile_collection_plot <- function (input_dataframe, key, gsd, mask, filename,
     # setup the plots
     if (logaxes) {
         plot (gsd, stripes_0.5, col = 'red', cex = 0.0, ylim = c(1e-5, max_density), 
-              xlab = 'grainsize (mm)', ylab = 'relative frequency', log = 'xy')
+              xlab = x_label, ylab = 'relative frequency', log = 'xy')
     } else {
         plot (gsd, stripes_0.5, col = 'red', cex = 0.0, ylim = c(1e-5, max_density), 
-              xlab = 'grainsize (mm)', ylab = 'relative frequency')
+              xlab = x_label, ylab = 'relative frequency')
     }
     
     # plot the polygons between 0.25 and 0.75 quantiles
@@ -450,7 +492,7 @@ quantile_collection_plot <- function (input_dataframe, key, gsd, mask, filename,
 
 # quantile plot of all the stripes and ripples as a ratio of ripple / stripe
 quantile_ratio_plot <- function (input_dataframe, key, gsd, mask, filename, pismo_treatment,
-                                      logaxes = F) {
+                                 log2_gsd = F, logaxes = F) {
     # function to make a median collection plot across a given transect (or zone
     # where it is meaningful to compare across). This plots the ratio of ripple / stripe
     # input_dataframe = the input dataframe
@@ -460,12 +502,20 @@ quantile_ratio_plot <- function (input_dataframe, key, gsd, mask, filename, pism
     # mask = the column mask to use for the plot
     # filename = the filename for the output png (optional)
     # pismo_treatment = the special boolean to deal with pismo
+    # log2_gsd = boolean to control whether or not to plot gsd as log2(gsd)
     # logaxes = use log axes
     
     ratio_color = 'forestgreen'
 
     input_dataframe [input_dataframe == 0.0] <- NA
     gsd[gsd == 0.0] <- NA
+    
+    if (log2_gsd) {
+        gsd <- log2 (gsd)
+        x_label <- 'log2 (grainsize) (log2 (mm))'
+    } else {
+        x_label <- 'grainsize (mm)'
+    }
     
     if (!missing (filename)) {
         png (filename = filename)
@@ -536,10 +586,10 @@ quantile_ratio_plot <- function (input_dataframe, key, gsd, mask, filename, pism
     # setup the plots
     if (logaxes) {
         plot (gsd, ratio_0.5, col = 'red', cex = 0.0, ylim = c(1e-5, max_ratio), 
-              xlab = 'grainsize (mm)', ylab = 'ripples / stripes', log = 'xy')
+              xlab = x_label, ylab = 'ripples / stripes', log = 'xy')
     } else {
         plot (gsd, ratio_0.5, col = 'red', cex = 0.0, ylim = c(1e-5, max_ratio), 
-              xlab = 'grainsize (mm)', ylab = 'ripples / stripes')
+              xlab = x_label, ylab = 'ripples / stripes')
     }
     
     # add a grey line at 0

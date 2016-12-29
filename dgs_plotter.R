@@ -19,7 +19,6 @@
 
 # this plots the dgs results
 
-source ('C://Users//tom//Dropbox//python//photoseive//violinplot.R')
 source ('C://Users//tom//Dropbox//python//photoseive//dgs_plotter_functions.R')
 
 

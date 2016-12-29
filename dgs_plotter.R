@@ -112,7 +112,6 @@ collection_plot_pismo (pismo, pismo_key_3, pismo_gsdbins, pismo_gsdmask, pismo_f
 
 
 # MEAN PLOTS
-
 # argentina 2015
 ar2014_mean_filename <- 'C://data//data//stripes//photoseives//argentina_2014_mean_collection.png'
 mean_collection_plot (ar2014, ar2014_key, ar2014_gsdbins, ar2014_gsdmask, pismo_treatment = FALSE)
@@ -133,7 +132,25 @@ mean_collection_plot (pismo, pismo_key_1, pismo_gsdbins, pismo_gsdmask, pismo_me
 mean_collection_plot (pismo, pismo_key_3, pismo_gsdbins, pismo_gsdmask, pismo_mean_filename_3, pismo_treatment = TRUE)
 
 
+# QUANTILE plots
+# argentina 2015
+ar2014_quantile_filename <- 'C://data//data//stripes//photoseives//argentina_2014_quantile_collection.png'
+quantile_collection_plot (ar2014, ar2014_key, ar2014_gsdbins, ar2014_gsdmask, pismo_treatment = FALSE)
+quantile_collection_plot (ar2014, ar2014_key, ar2014_gsdbins, ar2014_gsdmask, ar2014_quantile_filename, pismo_treatment = FALSE)
 
+# argentina 2015
+ar2015_quantile_filename <- 'C://data//data//stripes//photoseives//argentina_2015_quantile_collection.png'
+quantile_collection_plot (ar2015, ar2015_key, ar2015_gsdbins, ar2015_gsdmask, pismo_treatment = FALSE)
+quantile_collection_plot (ar2015, ar2015_key, ar2015_gsdbins, ar2015_gsdmask, ar2015_quantile_filename, pismo_treatment = FALSE)
+
+# pismo
+pismo_quantile_filename_1 <- 'C://data//data//stripes//photoseives//pismo_quantile_collection_1.png'
+pismo_quantile_filename_3 <- 'C://data//data//stripes//photoseives//pismo_quantile_collection_3.png'
+
+quantile_collection_plot (pismo, pismo_key_1, pismo_gsdbins, pismo_gsdmask, pismo_treatment = TRUE)
+quantile_collection_plot (pismo, pismo_key_3, pismo_gsdbins, pismo_gsdmask, pismo_treatment = TRUE)
+quantile_collection_plot (pismo, pismo_key_1, pismo_gsdbins, pismo_gsdmask, pismo_quantile_filename_1, pismo_treatment = TRUE)
+quantile_collection_plot (pismo, pismo_key_3, pismo_gsdbins, pismo_gsdmask, pismo_quantile_filename_3, pismo_treatment = TRUE)
 
 
 

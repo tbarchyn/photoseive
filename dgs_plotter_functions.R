@@ -331,6 +331,122 @@ mean_collection_plot <- function (input_dataframe, key, gsd, mask, filename, pis
     }    
 }
 
+# quantile plot of all the stripes and ripples in a collection
+quantile_collection_plot <- function (input_dataframe, key, gsd, mask, filename, pismo_treatment,
+                                  logaxes = F) {
+    # function to make a median collection plot across a given transect (or zone
+    # where it is meaningful to compare across) 
+    # input_dataframe = the input dataframe
+    # key = the input key dataframe with columns dir_base, and type, which
+    #       is one of s (stripe) or r (ripple).
+    # gsd = the grain size distribution x axis numbers
+    # mask = the column mask to use for the plot
+    # filename = the filename for the output png (optional)
+    # pismo_treatment = the special boolean to deal with pismo
+    # logaxes = use log axes
+    
+    stripe_color <- 'red'
+    ripple_color <- 'blue'
+    alpha_transparency <- 0.2
+    
+    input_dataframe [input_dataframe == 0.0] <- NA
+    gsd[gsd == 0.0] <- NA
+    
+    if (!missing (filename)) {
+        png (filename = filename)
+    }
+    
+    # ensure we don't have any broken factors
+    input_dataframe$dir_oneup_base <- as.character (input_dataframe$dir_oneup_base)
+    input_dataframe$dir_base <- as.character (input_dataframe$dir_base)
+    key$dir_base <- as.character (key$dir_base)
+    
+    # do the special treatment for pismo where the images are in directories named
+    # by their image name (which doesn't correspond to site). The site corresponds
+    # to the dir_oneup_base, which is the directory oneup
+    if (pismo_treatment) {
+        input_dataframe$dir_base <- input_dataframe$dir_oneup_base
+    }
+    
+    # take means of all the stripes and ripples
+    stripe_names <- key$dir_base [key$type == 's']
+    ripple_names <- key$dir_base [key$type == 'r']
+    
+    # assemble the stripes
+    cut_dataframe <- input_dataframe [1, ]          # make a base dataframe
+    for (i in stripe_names) {
+        new_dataframe <- input_dataframe [input_dataframe$dir_base == i, ]
+        cut_dataframe <- rbind (cut_dataframe, new_dataframe)
+    }
+    
+    cut_dataframe <- cut_dataframe [-1, ]   # get rid of the first column
+    cut_dataframe <- cut_dataframe [, mask]
+    stripes_0.1 <- apply (X = cut_dataframe, MARGIN = 2, FUN = quantile, probs = 0.1, na.rm = T)
+    stripes_0.25 <- apply (X = cut_dataframe, MARGIN = 2, FUN = quantile, probs = 0.25, na.rm = T)
+    stripes_0.5 <- apply (X = cut_dataframe, MARGIN = 2, FUN = quantile, probs = 0.5, na.rm = T)
+    stripes_0.75 <- apply (X = cut_dataframe, MARGIN = 2, FUN = quantile, probs = 0.75, na.rm = T)
+    stripes_0.9 <- apply (X = cut_dataframe, MARGIN = 2, FUN = quantile, probs = 0.9, na.rm = T)
+    
+    # assemble the ripples
+    cut_dataframe <- input_dataframe [1, ]          # make a base dataframe
+    for (i in ripple_names) {
+        new_dataframe <- input_dataframe [input_dataframe$dir_base == i, ]
+        cut_dataframe <- rbind (cut_dataframe, new_dataframe)
+    }
+    
+    cut_dataframe <- cut_dataframe [-1, ]   # get rid of the first column
+    cut_dataframe <- cut_dataframe [, mask]
+    ripples_0.1 <- apply (X = cut_dataframe, MARGIN = 2, FUN = quantile, probs = 0.1, na.rm = T)
+    ripples_0.25 <- apply (X = cut_dataframe, MARGIN = 2, FUN = quantile, probs = 0.25, na.rm = T)
+    ripples_0.5 <- apply (X = cut_dataframe, MARGIN = 2, FUN = quantile, probs = 0.55, na.rm = T)
+    ripples_0.75 <- apply (X = cut_dataframe, MARGIN = 2, FUN = quantile, probs = 0.75, na.rm = T)
+    ripples_0.9 <- apply (X = cut_dataframe, MARGIN = 2, FUN = quantile, probs = 0.9, na.rm = T)
+    
+    # find the maximum density
+    max_density <- max (c(max(ripples_0.9, na.rm = T), max(stripes_0.9, na.rm = T)))
+    
+    # setup the plots
+    if (logaxes) {
+        plot (gsd, stripes_0.5, col = 'red', cex = 0.0, ylim = c(1e-5, max_density), 
+              xlab = 'grainsize (mm)', ylab = 'relative frequency', log = 'xy')
+    } else {
+        plot (gsd, stripes_0.5, col = 'red', cex = 0.0, ylim = c(1e-5, max_density), 
+              xlab = 'grainsize (mm)', ylab = 'relative frequency')
+    }
+    
+    # plot the polygons between 0.25 and 0.75 quantiles
+    # stripes
+    polygon (x = c(gsd, rev(gsd)), y = c(stripes_0.75, rev(stripes_0.25)), 
+            col = adjustcolor (stripe_color, alpha.f = alpha_transparency), border = NA)
+    polygon (x = c(gsd, rev(gsd)), y = c(ripples_0.75, rev(ripples_0.25)), 
+             col = adjustcolor (ripple_color, alpha.f = alpha_transparency), border = NA)
+    
+    # plot the 0.9 and 0.1 quantiles as dotted lines
+    lines (gsd, stripes_0.9, col = stripe_color, lty = 3)
+    lines (gsd, stripes_0.1, col = stripe_color, lty = 3)
+    lines (gsd, ripples_0.9, col = ripple_color, lty = 3)
+    lines (gsd, ripples_0.1, col = ripple_color, lty = 3)
+    
+    # plot the 0.5 quantiles as solid lines
+    lines (gsd, stripes_0.5, col = stripe_color)
+    lines (gsd, ripples_0.5, col = ripple_color)
+    
+    # add a legend, showing the quantiles
+    legend (x = max(gsd) - 2, y = max_density, 
+            legend = c('90%, 10% stripes', '90%, 10% ripples', '50% stripes', '50% ripples',
+                       '75% to 25% stripes', '75% to 25% ripples'),
+            col = c(stripe_color, ripple_color, stripe_color, ripple_color,
+                    stripe_color, ripple_color),
+                    lty = c(3, 3, 1, 1, NA, NA),
+                    fill = c(NA, NA, NA, NA, adjustcolor (stripe_color, alpha.f = alpha_transparency),
+                             adjustcolor (ripple_color, alpha.f = alpha_transparency)),
+                    border = c(NA, NA, NA, NA, NA, NA),
+                    bty = 'n', merge = T)
+
+    if (!missing(filename)) {
+        dev.off ()
+    }    
+}
 
 
 

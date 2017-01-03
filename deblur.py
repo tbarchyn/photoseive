@@ -81,14 +81,13 @@ class deblur:
         oput = np.array ((tint * highpass) + ((1.0 - tint) * self.frame), np.uint8)
         
         # return the output or write to disk
-        if not output_file is None:
+        if output_file is None:
+            return (oput)
+        else:
             try:
                 cv2.imwrite (oput, output_file)
             except:
                 print ('ERROR: cannot write output file: ' + output_file)
-        
-        else:
-            return (oput)
         
         
 

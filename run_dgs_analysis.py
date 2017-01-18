@@ -176,7 +176,7 @@ if __name__ == '__main__':
     
     ##############################################################################
     # UPDATE THE PARAMETERS IN CONFIG FILES
-    if False:
+    if True:
         # change the density for more detail
         new_density = 10
         change_config (argentina_2014_directory, 'density', new_density)
@@ -200,8 +200,8 @@ if __name__ == '__main__':
     if True:
         # run the photoseive calculations
         run_photoseive_tree (argentina_2014_directory, scales)
-        #run_photoseive_tree (argentina_2015_directory, scales)
-        #run_photoseive_tree (pismo_directory, scales)
+        run_photoseive_tree (argentina_2015_directory, scales)
+        run_photoseive_tree (pismo_directory, scales)
     
     ##############################################################################
     # coallate the output data
@@ -210,9 +210,9 @@ if __name__ == '__main__':
     pismo_coallated_data = 'C:\\data\\data\\stripes\\photoseives\\pismo.csv'
     
     # run the coallate data function
-    #coallate_gsd_data (argentina_2014_directory, argentina_2014_coallated_data)
-    #coallate_gsd_data (argentina_2015_directory, argentina_2015_coallated_data)
-    #coallate_gsd_data (pismo_directory, pismo_coallated_data)
+    coallate_gsd_data (argentina_2014_directory, argentina_2014_coallated_data)
+    coallate_gsd_data (argentina_2015_directory, argentina_2015_coallated_data)
+    coallate_gsd_data (pismo_directory, pismo_coallated_data)
 
     
     

@@ -24,6 +24,7 @@ import sys
 import DGS
 import yaml
 import datetime
+import cv2
 import numpy as np
 import pandas as pd
 
@@ -130,4 +131,35 @@ class dgs_analysis:
         self.gsd.to_csv (self.gsd_file, index = False)
                                                     
         return
+    
+    def run_CLAHE (self):
+        '''
+        method to create a copy of the image with contrast limited adaptive histogram
+        equalization applied with the specified image. This creates a copy that is
+        stored locally, and the self.image_file variable is updated so the dgs
+        analysis gets run on the updated image.
+        '''
+        
+        # construct a new name
+        file_dir = os.path.dirname (self.image_file)
+        clahe_out_file = os.path.join (file_dir, 'clahe_image.jpg')
+        
+        # convert to greyscale
+        bgr_raw = cv2.imread (self.image_file)
+        gry_raw = cv2.cvtColor (bgr_raw, cv2.COLOR_BGR2GRAY)
+        
+        # create the clahe object
+        clahe_dims = (int (self.config['clahe_dims']), int (self.config['clahe_dims']))
+        clahe = cv2.createCLAHE (clipLimit = 2.0, tileGridSize = clahe_dims)
+        
+        # apply the clahe analysis
+        clahe_out = clahe.apply (gry_raw)
+
+        # write to disk and change image name
+        cv2.imwrite (clahe_out_file, clahe_out)
+        self.image_file = clahe_out_file
+        
+        return
+    
+    
     

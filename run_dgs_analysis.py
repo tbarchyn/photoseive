@@ -49,6 +49,9 @@ def run_photoseive_tree (base_dir, scales):
     the scaling data, the 1 image present is the 1 image to perform analysis on.
     This helps avoid errors as it is physical, the image present is analysed.
     
+    This deletes any clahe images in the directory to remake (possibly with new
+    clahe parameters).
+    
     base_dir = base directory to start the walk
     scales = user supplied scales
     '''
@@ -59,8 +62,15 @@ def run_photoseive_tree (base_dir, scales):
 
         # look for a config file
         if files.count('config.txt') == 1:
-            # we found one, let's see try to find the image
             images = glob.glob (os.path.join (dir[0], '*.JPG'))
+            
+            # try to delete any clahe images, we will remake during analysis
+            for i in images:
+                if os.path.basename (i) == 'clahe_image.jpg':
+                    os.unlink (i)
+            
+            images = glob.glob (os.path.join (dir[0], '*.JPG'))
+            
             if len (images) != 1:
                 print ('ERROR: there is a problem with the images here: ' + str(dir[0]))
             else:    
@@ -69,6 +79,7 @@ def run_photoseive_tree (base_dir, scales):
                 
                 # run the analysis
                 gs = dgs_analysis (image_name, scales)
+                gs.run_CLAHE ()
                 gs.run ()
                 
     return
@@ -164,22 +175,33 @@ if __name__ == '__main__':
     ## MEASURE THE SCALES ##
     
     ##############################################################################
-    # change the density for more detail
-    new_density = 10
-    change_config (argentina_2014_directory, 'density', new_density)
-    change_config (argentina_2015_directory, 'density', new_density)
-    change_config (pismo_directory, 'density', new_density)
+    # UPDATE THE PARAMETERS IN CONFIG FILES
+    if False:
+        # change the density for more detail
+        new_density = 10
+        change_config (argentina_2014_directory, 'density', new_density)
+        change_config (argentina_2015_directory, 'density', new_density)
+        change_config (pismo_directory, 'density', new_density)
+        
+        # add a minscale to the calculations (in pixels)
+        new_minscale = 3.14
+        change_config (argentina_2014_directory, 'minscale', new_minscale)
+        change_config (argentina_2015_directory, 'minscale', new_minscale)
+        change_config (pismo_directory, 'minscale', new_minscale)
     
-    # add a minscale to the calculations (in pixels)
-    new_minscale = 3.14
-    change_config (argentina_2014_directory, 'minscale', new_minscale)
-    change_config (argentina_2015_directory, 'minscale', new_minscale)
-    change_config (pismo_directory, 'minscale', new_minscale)
+        # add CLAHE dims to config
+        new_clahe_dims = 16
+        change_config (argentina_2014_directory, 'clahe_dims', new_clahe_dims)
+        change_config (argentina_2015_directory, 'clahe_dims', new_clahe_dims)
+        change_config (pismo_directory, 'clahe_dims', new_clahe_dims)
     
-    # run the photoseive calculations
-    # run_photoseive_tree (argentina_2014_directory, scales)
-    run_photoseive_tree (argentina_2015_directory, scales)
-    # run_photoseive_tree (pismo_directory, scales)
+    ##############################################################################
+    # RUN PHOTOSEIVE CALCULATIONS
+    if True:
+        # run the photoseive calculations
+        run_photoseive_tree (argentina_2014_directory, scales)
+        #run_photoseive_tree (argentina_2015_directory, scales)
+        #run_photoseive_tree (pismo_directory, scales)
     
     ##############################################################################
     # coallate the output data
@@ -188,9 +210,9 @@ if __name__ == '__main__':
     pismo_coallated_data = 'C:\\data\\data\\stripes\\photoseives\\pismo.csv'
     
     # run the coallate data function
-    # coallate_gsd_data (argentina_2014_directory, argentina_2014_coallated_data)
-    # coallate_gsd_data (argentina_2015_directory, argentina_2015_coallated_data)
-    # coallate_gsd_data (pismo_directory, pismo_coallated_data)
+    #coallate_gsd_data (argentina_2014_directory, argentina_2014_coallated_data)
+    #coallate_gsd_data (argentina_2015_directory, argentina_2015_coallated_data)
+    #coallate_gsd_data (pismo_directory, pismo_coallated_data)
 
     
     

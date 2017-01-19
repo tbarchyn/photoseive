@@ -99,18 +99,13 @@ def change_config (base_dir, key, value):
 
         # look for a config file
         if files.count('config.txt') == 1:
-            # we found one, let's see try to find the image
-            images = glob.glob (os.path.join (dir[0], '*.JPG'))
-            if len (images) != 1:
-                print ('ERROR: there is a problem with the images here: ' + str(dir[0]))
-            else:    
-                # ok, looks good, there is 1 image, lets get that image name
-                image_name = images[0]
-                
-                # init the dgs analysis object, then modify the config key and write
-                gs = dgs_analysis (image_name, None)
-                gs.config[key] = value
-                gs.write_config ()
+            # get that image name to open the dgs analysis object
+            image_name = images[0]
+            
+            # init the dgs analysis object, then modify the config key and write
+            gs = dgs_analysis (image_name, None)
+            gs.config[key] = value
+            gs.write_config ()
                 
                 
     return
@@ -176,7 +171,7 @@ if __name__ == '__main__':
     
     ##############################################################################
     # UPDATE THE PARAMETERS IN CONFIG FILES
-    if True:
+    if False:
         # change the density for more detail
         new_density = 10
         change_config (argentina_2014_directory, 'density', new_density)
@@ -197,22 +192,24 @@ if __name__ == '__main__':
     
     ##############################################################################
     # RUN PHOTOSEIVE CALCULATIONS
-    if True:
+    if False:
         # run the photoseive calculations
         run_photoseive_tree (argentina_2014_directory, scales)
         run_photoseive_tree (argentina_2015_directory, scales)
         run_photoseive_tree (pismo_directory, scales)
     
     ##############################################################################
-    # coallate the output data
-    argentina_2014_coallated_data = 'C:\\data\\data\\stripes\\photoseives\\argentina_2014.csv'
-    argentina_2015_coallated_data = 'C:\\data\\data\\stripes\\photoseives\\argentina_2015.csv'
-    pismo_coallated_data = 'C:\\data\\data\\stripes\\photoseives\\pismo.csv'
-    
-    # run the coallate data function
-    coallate_gsd_data (argentina_2014_directory, argentina_2014_coallated_data)
-    coallate_gsd_data (argentina_2015_directory, argentina_2015_coallated_data)
-    coallate_gsd_data (pismo_directory, pismo_coallated_data)
+    # COALLATE THE DATA
+    if True:
+        # coallate the output data
+        argentina_2014_coallated_data = 'C:\\data\\data\\stripes\\photoseives\\argentina_2014.csv'
+        argentina_2015_coallated_data = 'C:\\data\\data\\stripes\\photoseives\\argentina_2015.csv'
+        pismo_coallated_data = 'C:\\data\\data\\stripes\\photoseives\\pismo.csv'
+        
+        # run the coallate data function
+        coallate_gsd_data (argentina_2014_directory, argentina_2014_coallated_data)
+        coallate_gsd_data (argentina_2015_directory, argentina_2015_coallated_data)
+        coallate_gsd_data (pismo_directory, pismo_coallated_data)
 
     
     

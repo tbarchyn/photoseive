@@ -45,12 +45,8 @@ def coallate_gsd_data (base_dir, output_file):
 
         # look for a config file
         if files.count('config.txt') == 1:
-            # we found one, let's see try to find the image
-            images = glob.glob (os.path.join (dir[0], '*.JPG'))
-            if len (images) != 1:
-                print ('ERROR: there is a problem with the images here: ' + str(dir[0]))
-            else:    
-                # ok, looks good, there is 1 image, lets get some data
+            try:
+                # ok, lets go ahead and try to run the coallation
                 directory = dir[0]                            # get directory
                 os.chdir (directory)                          # get local
                 directory_base = os.path.basename (dir[0])    # get dir
@@ -103,8 +99,9 @@ def coallate_gsd_data (base_dir, output_file):
                         
                 # append the data list
                 res = res.append (dta, ignore_index = True)
-                
                 print ('completed: ' + directory)
+            except:
+                print ('error with: ' + directory)
                 
     # save the file
     res.to_csv (output_file, index = False)

@@ -28,3 +28,5 @@ verbose: 0
 - **resolution:** this is the measured mm/pixel, which is essential data as I've cropped out the ruler from the images.
 - **used_calibrated:** this is either 'yes' or 'no' to denote whether I used the calibrated image, some of the calibrated images yeilded too much distortion on the ruler, thus I used uncalibrated images.
 - **verbose:** this prints more stuff to the console.
+
+See the pyDGS readme for more instructions: https://github.com/dbuscombe-usgs/pyDGS
